@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const routes = require('./routes/routes');
+const cors = require('cors');
 
 const uri = "";
 
@@ -16,6 +17,8 @@ database.once('connected', () => {
 })
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
