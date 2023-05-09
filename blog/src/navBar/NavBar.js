@@ -1,7 +1,21 @@
 import {NavLink} from "react-router-dom";
 import './main.css';
+import {useEffect, useState} from "react";
 
-export default function NavBar() {
+export default function NavBar(props) {
+
+    const [isLoggedIn, setIsLoggedIn] = useState(props.isLoggedIn);
+
+
+    useEffect(() => {
+        setIsLoggedIn(props.isLoggedIn);
+    }, [props.isLoggedIn])
+
+
+    const handleSignOut = () => {
+        props.setIsLoggedIn(false);
+    }
+
     return (<>
         <nav className='navbar navbar-expand-lg navbar-dark bg-dark'>
             <div className='container-fluid'>
@@ -22,19 +36,36 @@ export default function NavBar() {
                         </li>
                         <li className='nav-item dropdown'>
                             <NavLink className='nav-link dropdown-toggle' role='button'
-                                     data-bs-toggle='dropdown' aria-expanded='false'>Login</NavLink>
-                            <ul className='dropdown-menu'>
+                                     data-bs-toggle='dropdown'
+                                     aria-expanded='false'>{isLoggedIn ? 'Profile' : 'Login'}</NavLink>
+                            {!isLoggedIn ? (<ul className='dropdown-menu'>
                                 <li>
                                     <NavLink className='dropdown-item' to='/login'>login</NavLink>
                                 </li>
                                 <li>
-                                    <NavLink className='dropdown-item' to='/singin'>sing in</NavLink>
+                                    <NavLink className='dropdown-item' to='/signin'>sign in</NavLink>
                                 </li>
                                 <li>
                                     <hr className='dropdown-divider'/>
                                 </li>
                                 <p className='text-muted text-center'>BlogApp</p>
-                            </ul>
+                            </ul>) : (<ul className='dropdown-menu'>
+                                <li>
+                                    <NavLink className={'dropdown-item'} to={'/published'}>published</NavLink>
+                                </li>
+                                <li>
+                                    <NavLink className={'dropdown-item'} to={'/settings'}>settings</NavLink>
+                                </li>
+                                <li>
+                                    <button className={'dropdown-item'} onClick={handleSignOut}>sign
+                                        out
+                                    </button>
+                                </li>
+                                <li>
+                                    <hr className='dropdown-divider'/>
+                                </li>
+                                <p className='text-muted text-center'>BlogApp</p>
+                            </ul>)}
                         </li>
                     </ul>
                     <form className='d-flex' role='search'>

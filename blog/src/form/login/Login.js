@@ -20,9 +20,9 @@ class Login extends React.Component {
     async handleSubmit(event) {
         event.preventDefault();
         if (validPassword.test(this.state.password) && validEmail.test(this.state.email)) {
-
-            getUser(this.state.password, this.state.email)
-
+            if (await getUser(this.state.password, this.state.email) === true) {
+                this.props.setIsLoggedIn(true);
+            }
             this.setState({
                 email: '',
                 password: ''

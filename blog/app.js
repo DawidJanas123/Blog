@@ -1,9 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const routes = require('./routes/routes');
+const routes = require('./src/mongoDB/routes/routes');
 const cors = require('cors');
+require('dotenv').config();
 
-const uri = "";
+const uri = `${process.env.REACT_APP_URI}`;
 
 mongoose.connect(uri);
 const database = mongoose.connection;

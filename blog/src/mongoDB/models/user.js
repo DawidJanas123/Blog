@@ -8,14 +8,14 @@ const UserSchema = new Schema({
     username: {type: String, required: true, maxLength: 30},
     password: {type: String, required: true},
     email: {type: String, required: true, maxLength: 50},
-    date: {type: String, require: true},
+    date: {type: String, required: true},
+    isVerified: {type: Boolean, required: true},
     tokens: [{
         token: {
             type: String, required: true
         }
     }]
 }, {
-
     collection: 'credentials'
 })
 
@@ -43,17 +43,6 @@ UserSchema.methods.generateAuthToken = async function () {
     return token
 }
 
-UserSchema.statics.ifUserAlreadyExist = async (email) => {
-
-    const user = await User.findOne({email}).exec();
-
-    if (user) {
-        throw new Error('You already have acc');
-    }
-
-}
-
-
 UserSchema.statics.findByCredentials = async (email, password) => {
 
     const user = await User.findOne({email}).exec();
@@ -61,10 +50,15 @@ UserSchema.statics.findByCredentials = async (email, password) => {
     if (!user) {
         throw new Error('Unable to Login')
     }
+
     const isMatch = await bcrypt.compareSync(password, user.password);
 
     if (!isMatch) {
         throw new Error('Unable to Login');
+    }
+
+    if (!user.isVerified) {
+        throw new Error('Email is not verified');
     }
 
     return user

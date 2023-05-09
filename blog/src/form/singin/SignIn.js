@@ -1,7 +1,9 @@
 import React from "react";
 import {validPassword, validUsername, validEmail} from "./regex/Regex";
+import {Redirect, Route} from "react-router-dom";
+import ActiveLink from "./ActiveLink";
 
-class SingIn extends React.Component {
+class SignIn extends React.Component {
 
     constructor(props) {
         super(props);
@@ -48,7 +50,8 @@ class SingIn extends React.Component {
         event.preventDefault();
 
         if (validEmail.test(this.state.email) && validPassword.test(this.state.password) && validUsername.test(this.state.username)) {
-            await fetch("http://localhost:8080/blog/singin", {
+
+            await fetch("http://localhost:8080/blog/signin", {
                 method: "POST", headers: {
                     "Content-Type": "application/json"
                 }, body: JSON.stringify({
@@ -59,7 +62,19 @@ class SingIn extends React.Component {
                 })
             }).then((res) => res.json())
                 .then((post) => {
-                    console.log(post);
+                    console.log(post.message);
+                    switch (post.message) {
+                        case 'You already have account':
+                            this.props.setCheckRegister(draft => {
+                                draft.checkRegister = true
+                            });
+                            break;
+                        case 'We have been sent you activated email':
+                            this.props.setCheckRegister(draft => {
+                                draft.sendMail = true;
+                            })
+                            break;
+                    }
                 })
                 .catch((err) => {
                     console.log(err.message);
@@ -73,7 +88,7 @@ class SingIn extends React.Component {
 
     render() {
         return (<>
-            <form onSubmit={this.handleSubmit}>
+            {!this.props.checkRegister.sendMail && <form onSubmit={this.handleSubmit}>
                 <div className='mb-3 has-validation'>
                     <label for="email" className='form-label'>Email address</label>
                     <input type="email" name='email'
@@ -83,6 +98,8 @@ class SingIn extends React.Component {
                         <div id='emailHint' className='form-text'>We'll never share your email with anyone
                             else.</div>}
                     {this.props.email && <p className='text-danger'>*Your email is invalid</p>}
+                    {this.props.checkRegister.checkRegister &&
+                        <p className={'text-danger'}>*You already have account with this email</p>}
                 </div>
                 <div className='mb-3'>
                     <label for="password"
@@ -106,9 +123,10 @@ class SingIn extends React.Component {
                             only letters and numbers</p>}
                 </div>
                 <input type="submit" className='btn btn-primary' value='Submit'/>
-            </form>
+            </form>}
+            {this.props.checkRegister.sendMail && ActiveLink()}
         </>)
     }
 }
 
-export default SingIn;
+export default SignIn;
